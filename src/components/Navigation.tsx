@@ -1,16 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Crown, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageToggle from "./LanguageToggle";
+import ThemeToggle from "./ThemeToggle";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
 
   const navItems = [
-    { name: "Home", href: "#home" },
-    { name: "Services", href: "#services" },
-    { name: "Fleet", href: "#fleet" },
-    { name: "About", href: "#about" },
-    { name: "Contact", href: "#contact" }
+    { name: t("home"), href: "#home" },
+    { name: t("services"), href: "#services" },
+    { name: t("fleet"), href: "#fleet" },
+    { name: t("about"), href: "#about" },
+    { name: t("contact"), href: "#contact" }
   ];
 
   return (
@@ -43,11 +47,13 @@ const Navigation = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
+            <LanguageToggle />
             <Button variant="ghost" size="sm">
-              +1 (555) 123-4567
+              {t("phone")}
             </Button>
             <Button variant="default" size="sm" className="luxury-hover">
-              Book Now
+              {t("bookNow")}
             </Button>
           </div>
 
@@ -77,11 +83,15 @@ const Navigation = () => {
                 </a>
               ))}
               <div className="pt-4 space-y-3">
+                <div className="flex space-x-2">
+                  <ThemeToggle />
+                  <LanguageToggle />
+                </div>
                 <Button variant="ghost" size="sm" className="w-full">
-                  +1 (555) 123-4567
+                  {t("phone")}
                 </Button>
                 <Button variant="default" size="sm" className="w-full luxury-hover">
-                  Book Now
+                  {t("bookNow")}
                 </Button>
               </div>
             </div>

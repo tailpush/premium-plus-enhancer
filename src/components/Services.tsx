@@ -1,34 +1,37 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Briefcase, Crown, Plane, MapPin, Clock, Shield } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Services = () => {
+  const { t } = useLanguage();
+  
   const services = [
     {
       icon: Briefcase,
-      title: "Executive Transport",
-      description: "Professional chauffeur services for business executives and corporate clients.",
+      title: t("executiveTitle"),
+      description: t("executiveDesc"),
       features: ["Business-class vehicles", "Professional chauffeurs", "Corporate accounts", "Flexible scheduling"],
       price: "From $150/hr"
     },
     {
       icon: Crown,
-      title: "VIP Experience",
-      description: "Luxury transportation for special occasions and high-profile clients.",
+      title: t("vipTitle"),
+      description: t("vipDesc"),
       features: ["Premium fleet", "Red carpet service", "Personal concierge", "Privacy guaranteed"],
       price: "From $250/hr"
     },
     {
       icon: Plane,
-      title: "Airport Transfers",
-      description: "Reliable and punctual airport transportation with flight monitoring.",
+      title: t("airportTitle"),
+      description: t("airportDesc"),
       features: ["Flight tracking", "Meet & greet", "Luggage assistance", "24/7 availability"],
       price: "From $120"
     },
     {
       icon: MapPin,
-      title: "Tourism Packages",
-      description: "Customized sightseeing and tourism packages with local expertise.",
+      title: t("tourismTitle"),
+      description: t("tourismDesc"),
       features: ["Local guides", "Custom itineraries", "Multi-day packages", "Group discounts"],
       price: "From $200/day"
     }
@@ -37,7 +40,7 @@ const Services = () => {
   const features = [
     {
       icon: Clock,
-      title: "24/7 Availability",
+      title: t("available24h"),
       description: "Round-the-clock service for your convenience"
     },
     {
@@ -53,10 +56,10 @@ const Services = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-light mb-6">
-            Premium <span className="gradient-text">Services</span>
+            {t("servicesTitle")}
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Tailored transportation solutions designed to exceed your expectations
+            {t("servicesSubtitle")}
           </p>
         </div>
 

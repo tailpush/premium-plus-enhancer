@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Crown, Star } from "lucide-react";
 import heroImage from "@/assets/hero-luxury-car.jpg";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Hero = () => {
+  const { t } = useLanguage();
+  
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Hero Background */}
@@ -25,14 +28,12 @@ const Hero = () => {
 
           {/* Main Heading */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-light mb-6 leading-tight">
-            <span className="gradient-text">Premium</span>
-            <br />
-            Chauffeur Service
+            <span className="gradient-text">{t("heroTitle")}</span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Experience luxury transportation with our fleet of premium vehicles and professional chauffeurs
+            {t("heroSubtitle")}
           </p>
 
           {/* Star Rating */}
@@ -46,19 +47,19 @@ const Hero = () => {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button variant="default" size="lg" className="text-lg px-8 py-4 luxury-hover">
-              Book Your Ride
+              {t("bookNow")}
             </Button>
             <Button variant="outline" size="lg" className="text-lg px-8 py-4 luxury-hover">
-              View Fleet
+              {t("fleetTitle")}
             </Button>
           </div>
 
           {/* Services Preview */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
             {[
-              { title: "Executive Transport", desc: "Professional business travel" },
-              { title: "VIP Service", desc: "Luxury experience guaranteed" },
-              { title: "Airport Transfers", desc: "Punctual & comfortable" }
+              { title: t("executiveTitle"), desc: t("professionalDrivers") },
+              { title: t("vipTitle"), desc: t("luxuryVehicles") },
+              { title: t("airportTitle"), desc: t("available24h") }
             ].map((service, index) => (
               <div key={index} className="glass rounded-lg p-6 luxury-hover">
                 <h3 className="text-lg font-medium text-primary mb-2">{service.title}</h3>
