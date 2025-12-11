@@ -2,19 +2,22 @@ import { Button } from "@/components/ui/button";
 import { Crown, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Link, useLocation } from "react-router-dom";
 import LanguageToggle from "./LanguageToggle";
 import ThemeToggle from "./ThemeToggle";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   const navItems = [
-    { name: t("home"), href: "#home" },
-    { name: t("services"), href: "#services" },
-    { name: t("fleet"), href: "#fleet" },
-    { name: t("about"), href: "#about" },
-    { name: t("contact"), href: "#contact" }
+    { name: t("home"), href: isHomePage ? "#home" : "/" },
+    { name: t("services"), href: isHomePage ? "#services" : "/#services" },
+    { name: t("fleet"), href: isHomePage ? "#fleet" : "/#fleet" },
+    { name: language === 'ar' ? 'الوجهات' : 'Destinations', href: "/destinations" },
+    { name: t("contact"), href: isHomePage ? "#contact" : "/#contact" }
   ];
 
   return (
@@ -35,13 +38,23 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-muted-foreground hover:text-foreground transition-colors luxury-hover"
-              >
-                {item.name}
-              </a>
+              item.href.startsWith('/') && !item.href.includes('#') ? (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="text-muted-foreground hover:text-foreground transition-colors luxury-hover"
+                >
+                  {item.name}
+                </Link>
+              ) : (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="text-muted-foreground hover:text-foreground transition-colors luxury-hover"
+                >
+                  {item.name}
+                </a>
+              )
             ))}
           </div>
 
@@ -73,14 +86,25 @@ const Navigation = () => {
           <div className="md:hidden py-6 border-t border-border/50">
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-muted-foreground hover:text-foreground transition-colors py-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </a>
+                item.href.startsWith('/') && !item.href.includes('#') ? (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className="text-muted-foreground hover:text-foreground transition-colors py-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ) : (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="text-muted-foreground hover:text-foreground transition-colors py-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </a>
+                )
               ))}
               <div className="pt-4 space-y-3">
                 <div className="flex space-x-2">
