@@ -40,6 +40,14 @@ const VehicleDetailModal = ({ vehicle, isOpen, onClose }: VehicleDetailModalProp
   const [rotation, setRotation] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const { language } = useLanguage();
+
+  // Reset state when modal opens - must be before any conditional returns
+  useEffect(() => {
+    if (isOpen) {
+      setActiveIndex(0);
+      setRotation(0);
+    }
+  }, [isOpen]);
   
   if (!vehicle) return null;
 
@@ -56,14 +64,6 @@ const VehicleDetailModal = ({ vehicle, isOpen, onClose }: VehicleDetailModalProp
     vehicle.gallery.back,
     vehicle.gallery.interior,
   ];
-
-  // Reset state when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setActiveIndex(0);
-      setRotation(0);
-    }
-  }, [isOpen]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
