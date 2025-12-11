@@ -1,12 +1,50 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Fuel, Settings, Star } from "lucide-react";
+import { Users, Star } from "lucide-react";
 import bmwImage from "@/assets/bmw-7-series.jpg";
 import mercedesImage from "@/assets/mercedes-s-class.jpg";
 import vClassImage from "@/assets/mercedes-v-class.jpg";
+// BMW Gallery
+import bmwFront from "@/assets/bmw-7-front.jpg";
+import bmwBack from "@/assets/bmw-7-back.jpg";
+import bmwInterior from "@/assets/bmw-7-interior.jpg";
+import bmwSide from "@/assets/bmw-7-side.jpg";
+// Mercedes S-Class Gallery
+import mercedesFront from "@/assets/mercedes-s-front.jpg";
+import mercedesBack from "@/assets/mercedes-s-back.jpg";
+import mercedesInterior from "@/assets/mercedes-s-interior.jpg";
+import mercedesSide from "@/assets/mercedes-s-side.jpg";
+// Mercedes V-Class Gallery
+import vClassFront from "@/assets/mercedes-v-front.jpg";
+import vClassBack from "@/assets/mercedes-v-back.jpg";
+import vClassInterior from "@/assets/mercedes-v-interior.jpg";
+import vClassSide from "@/assets/mercedes-v-side.jpg";
+import VehicleDetailModal from "./VehicleDetailModal";
+
+interface VehicleGallery {
+  front: string;
+  back: string;
+  interior: string;
+  side: string;
+}
+
+interface Vehicle {
+  name: string;
+  category: string;
+  image: string;
+  passengers: string;
+  features: string[];
+  rating: number;
+  price: string;
+  gallery: VehicleGallery;
+}
 
 const Fleet = () => {
-  const vehicles = [
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const vehicles: Vehicle[] = [
     {
       name: "BMW 7 Series",
       category: "Executive Sedan",
@@ -14,7 +52,13 @@ const Fleet = () => {
       passengers: "3 Passengers",
       features: ["Premium leather seats", "Climate control", "WiFi & charging", "Privacy partition"],
       rating: 4.9,
-      price: "From $150/hr"
+      price: "From $150/hr",
+      gallery: {
+        front: bmwFront,
+        back: bmwBack,
+        interior: bmwInterior,
+        side: bmwSide,
+      }
     },
     {
       name: "Mercedes S-Class",
@@ -23,7 +67,13 @@ const Fleet = () => {
       passengers: "3 Passengers", 
       features: ["Massage seats", "Entertainment system", "Ambient lighting", "Champagne service"],
       rating: 5.0,
-      price: "From $200/hr"
+      price: "From $200/hr",
+      gallery: {
+        front: mercedesFront,
+        back: mercedesBack,
+        interior: mercedesInterior,
+        side: mercedesSide,
+      }
     },
     {
       name: "Mercedes V-Class",
@@ -32,9 +82,20 @@ const Fleet = () => {
       passengers: "6 Passengers",
       features: ["Spacious interior", "Business seating", "Conference table", "Group amenities"],
       rating: 4.8,
-      price: "From $180/hr"
+      price: "From $180/hr",
+      gallery: {
+        front: vClassFront,
+        back: vClassBack,
+        interior: vClassInterior,
+        side: vClassSide,
+      }
     }
   ];
+
+  const handleViewDetails = (vehicle: Vehicle) => {
+    setSelectedVehicle(vehicle);
+    setIsModalOpen(true);
+  };
 
   return (
     <section id="fleet" className="py-20 px-6 bg-gradient-card">
@@ -97,7 +158,12 @@ const Fleet = () => {
 
                 {/* CTA Buttons */}
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1 luxury-hover">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 luxury-hover"
+                    onClick={() => handleViewDetails(vehicle)}
+                  >
                     View Details
                   </Button>
                   <Button variant="default" size="sm" className="flex-1 luxury-hover">
@@ -128,6 +194,13 @@ const Fleet = () => {
           ))}
         </div>
       </div>
+
+      {/* Vehicle Detail Modal */}
+      <VehicleDetailModal 
+        vehicle={selectedVehicle}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </section>
   );
 };
