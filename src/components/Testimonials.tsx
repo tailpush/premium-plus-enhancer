@@ -1,7 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Quote } from "lucide-react";
+import { useIntersectionObserver } from "@/hooks/useParallax";
 
 const Testimonials = () => {
+  const { ref: headerRef, isVisible: headerVisible } = useIntersectionObserver(0.1);
+  const { ref: gridRef, isVisible: gridVisible } = useIntersectionObserver(0.1);
+  const { ref: statsRef, isVisible: statsVisible } = useIntersectionObserver(0.1);
   const testimonials = [
     {
       name: "Sarah Johnson",
@@ -48,10 +52,16 @@ const Testimonials = () => {
   ];
 
   return (
-    <section className="py-20 px-6 bg-gradient-card">
-      <div className="container mx-auto">
+    <section className="py-20 px-6 bg-gradient-card relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent pointer-events-none" />
+      
+      <div className="container mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div 
+          ref={headerRef}
+          className={`text-center mb-16 opacity-0 ${headerVisible ? 'animate-slide-up' : ''}`}
+        >
           <h2 className="text-4xl md:text-5xl font-light mb-6">
             Client <span className="gradient-text">Testimonials</span>
           </h2>
@@ -60,10 +70,17 @@ const Testimonials = () => {
           </p>
         </div>
 
-        {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Testimonials Grid - Horizontal Scroll on Mobile */}
+        <div 
+          ref={gridRef}
+          className="flex lg:grid lg:grid-cols-3 gap-8 overflow-x-auto pb-4 snap-x snap-mandatory lg:overflow-visible lg:pb-0"
+        >
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="glass luxury-hover h-full">
+            <Card 
+              key={index} 
+              className={`glass luxury-hover h-full min-w-[320px] lg:min-w-0 snap-start opacity-0 ${gridVisible ? 'animate-slide-up' : ''}`}
+              style={{ animationDelay: gridVisible ? `${index * 100}ms` : '0ms' }}
+            >
               <CardContent className="p-6">
                 {/* Quote Icon */}
                 <div className="mb-4">
@@ -100,14 +117,21 @@ const Testimonials = () => {
         </div>
 
         {/* Trust Indicators */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto mt-16 pt-12 border-t border-border/20">
+        <div 
+          ref={statsRef}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto mt-16 pt-12 border-t border-border/20"
+        >
           {[
             { number: "4.9/5", label: "Average Rating" },
             { number: "500+", label: "Satisfied Clients" },
             { number: "10,000+", label: "Successful Rides" },
             { number: "99%", label: "On-Time Rate" }
           ].map((stat, index) => (
-            <div key={index} className="text-center">
+            <div 
+              key={index} 
+              className={`text-center opacity-0 ${statsVisible ? 'animate-slide-up' : ''}`}
+              style={{ animationDelay: statsVisible ? `${index * 100}ms` : '0ms' }}
+            >
               <div className="text-2xl md:text-3xl font-light gradient-text mb-2">
                 {stat.number}
               </div>

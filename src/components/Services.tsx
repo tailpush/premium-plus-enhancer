@@ -2,9 +2,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Briefcase, Crown, Plane, MapPin, Clock, Shield } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useIntersectionObserver } from "@/hooks/useParallax";
 
 const Services = () => {
   const { t } = useLanguage();
+  const { ref: headerRef, isVisible: headerVisible } = useIntersectionObserver(0.1);
+  const { ref: gridRef, isVisible: gridVisible } = useIntersectionObserver(0.1);
+  const { ref: featuresRef, isVisible: featuresVisible } = useIntersectionObserver(0.1);
   
   const services = [
     {
@@ -51,10 +55,16 @@ const Services = () => {
   ];
 
   return (
-    <section id="services" className="py-20 px-6">
-      <div className="container mx-auto">
+    <section id="services" className="py-20 px-6 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
+      
+      <div className="container mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div 
+          ref={headerRef}
+          className={`text-center mb-16 opacity-0 ${headerVisible ? 'animate-slide-up' : ''}`}
+        >
           <h2 className="text-4xl md:text-5xl font-light mb-6">
             {t("servicesTitle")}
           </h2>
@@ -63,12 +73,20 @@ const Services = () => {
           </p>
         </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+        {/* Services Grid with Stagger */}
+        <div 
+          ref={gridRef}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16"
+        >
           {services.map((service, index) => {
             const IconComponent = service.icon;
+            const animationDelay = index * 100;
             return (
-              <Card key={index} className="glass luxury-hover h-full">
+              <Card 
+                key={index} 
+                className={`glass luxury-hover h-full opacity-0 ${gridVisible ? `animate-slide-up` : ''}`}
+                style={{ animationDelay: gridVisible ? `${animationDelay}ms` : '0ms' }}
+              >
                 <CardHeader>
                   <div className="flex items-center gap-4 mb-4">
                     <div className="bg-primary/10 rounded-full p-3">
@@ -102,11 +120,18 @@ const Services = () => {
         </div>
 
         {/* Additional Features */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div 
+          ref={featuresRef}
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
+        >
           {features.map((feature, index) => {
             const IconComponent = feature.icon;
             return (
-              <div key={index} className="glass rounded-lg p-6 text-center luxury-hover">
+              <div 
+                key={index} 
+                className={`glass rounded-lg p-6 text-center luxury-hover opacity-0 ${featuresVisible ? 'animate-slide-up' : ''}`}
+                style={{ animationDelay: featuresVisible ? `${index * 150}ms` : '0ms' }}
+              >
                 <div className="bg-primary/10 rounded-full p-4 w-fit mx-auto mb-4">
                   <IconComponent className="w-8 h-8 text-primary" />
                 </div>
