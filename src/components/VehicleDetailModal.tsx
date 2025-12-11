@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Users, Star, RotateCcw, Hand } from "lucide-react";
+import { Users, Star, RotateCcw, Hand, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface VehicleGallery {
@@ -115,8 +115,17 @@ const VehicleDetailModal = ({ vehicle, isOpen, onClose }: VehicleDetailModalProp
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl glass border-primary/20">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 z-50 rounded-full bg-background/80 backdrop-blur-sm p-2 hover:bg-background transition-colors"
+          aria-label="Close"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        
         <DialogHeader>
-          <DialogTitle className="text-2xl font-light flex items-center justify-between">
+          <DialogTitle className="text-2xl font-light flex items-center justify-between pr-10">
             <span>{vehicle.name}</span>
             <div className="flex items-center gap-2">
               <Star className="w-5 h-5 fill-primary text-primary" />
