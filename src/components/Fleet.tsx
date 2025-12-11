@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Star } from "lucide-react";
-import bmwImage from "@/assets/bmw-7-series.jpg";
-import mercedesImage from "@/assets/mercedes-s-class.jpg";
-import vClassImage from "@/assets/mercedes-v-class.jpg";
+// Using front gallery images for cards to maintain consistency
+import bmwImage from "@/assets/bmw-7-front.jpg";
+import mercedesImage from "@/assets/mercedes-s-front.jpg";
+import vClassImage from "@/assets/mercedes-v-front.jpg";
 // BMW Gallery
 import bmwFront from "@/assets/bmw-7-front.jpg";
 import bmwBack from "@/assets/bmw-7-back.jpg";
