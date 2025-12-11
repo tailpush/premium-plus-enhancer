@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Users, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Users, Star, RotateCcw, Hand } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface VehicleGallery {
@@ -34,28 +34,82 @@ interface VehicleDetailModalProps {
 }
 
 const VehicleDetailModal = ({ vehicle, isOpen, onClose }: VehicleDetailModalProps) => {
-  const [activeView, setActiveView] = useState<keyof VehicleGallery>("front");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [rotation, setRotation] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { language } = useLanguage();
   
   if (!vehicle) return null;
 
-  const views: { key: keyof VehicleGallery; label: string; labelAr: string }[] = [
-    { key: "front", label: "Front", labelAr: "أمامي" },
-    { key: "back", label: "Back", labelAr: "خلفي" },
-    { key: "interior", label: "Interior", labelAr: "داخلي" },
-    { key: "side", label: "Side", labelAr: "جانبي" },
+  const views: { key: keyof VehicleGallery; label: string; labelAr: string; angle: number }[] = [
+    { key: "front", label: "Front", labelAr: "أمامي", angle: 0 },
+    { key: "side", label: "Side", labelAr: "جانبي", angle: 90 },
+    { key: "back", label: "Back", labelAr: "خلفي", angle: 180 },
+    { key: "interior", label: "Interior", labelAr: "داخلي", angle: 270 },
   ];
 
-  const currentIndex = views.findIndex(v => v.key === activeView);
-  
-  const goToPrevious = () => {
-    const newIndex = currentIndex === 0 ? views.length - 1 : currentIndex - 1;
-    setActiveView(views[newIndex].key);
+  const galleryImages = [
+    vehicle.gallery.front,
+    vehicle.gallery.side,
+    vehicle.gallery.back,
+    vehicle.gallery.interior,
+  ];
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setActiveIndex(0);
+      setRotation(0);
+    }
+  }, [isOpen]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setStartX(e.clientX);
   };
 
-  const goToNext = () => {
-    const newIndex = currentIndex === views.length - 1 ? 0 : currentIndex + 1;
-    setActiveView(views[newIndex].key);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    setStartX(e.touches[0].clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    handleDrag(e.clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    handleDrag(e.touches[0].clientX);
+  };
+
+  const handleDrag = (currentX: number) => {
+    const diff = currentX - startX;
+    const sensitivity = 2;
+    
+    if (Math.abs(diff) > 50) {
+      const direction = diff > 0 ? -1 : 1;
+      const newIndex = (activeIndex + direction + galleryImages.length) % galleryImages.length;
+      setActiveIndex(newIndex);
+      setRotation(prev => prev + (direction * 90));
+      setStartX(currentX);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
+  const goToView = (index: number) => {
+    const diff = index - activeIndex;
+    setRotation(prev => prev + (diff * 90));
+    setActiveIndex(index);
   };
 
   return (
@@ -71,57 +125,118 @@ const VehicleDetailModal = ({ vehicle, isOpen, onClose }: VehicleDetailModalProp
           </DialogTitle>
         </DialogHeader>
 
-        {/* Main Gallery Image */}
-        <div className="relative aspect-video overflow-hidden rounded-lg bg-secondary/30">
-          <img
-            src={vehicle.gallery[activeView]}
-            alt={`${vehicle.name} - ${activeView}`}
-            className="w-full h-full object-cover transition-opacity duration-300"
-          />
-          
-          {/* Navigation Arrows */}
-          <button
-            onClick={goToPrevious}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-2 hover:bg-background transition-colors"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button
-            onClick={goToNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-2 hover:bg-background transition-colors"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
+        {/* 360° Gallery */}
+        <div className="relative">
+          {/* Drag Instruction */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 text-sm">
+            <Hand className="w-4 h-4" />
+            <span>{language === "ar" ? "اسحب للدوران 360°" : "Drag to rotate 360°"}</span>
+          </div>
 
-          {/* View Label */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full">
-            <span className="text-sm font-medium">
-              {language === "ar" 
-                ? views.find(v => v.key === activeView)?.labelAr 
-                : views.find(v => v.key === activeView)?.label}
-            </span>
+          {/* Main Gallery Container */}
+          <div
+            ref={containerRef}
+            className={`relative aspect-video overflow-hidden rounded-lg bg-secondary/30 cursor-grab select-none ${isDragging ? 'cursor-grabbing' : ''}`}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Image with transition */}
+            <div className="relative w-full h-full">
+              {galleryImages.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`${vehicle.name} - ${views[index].label}`}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                    index === activeIndex ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  draggable={false}
+                />
+              ))}
+            </div>
+
+            {/* Rotation Indicator */}
+            <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm rounded-full p-2">
+              <RotateCcw 
+                className="w-5 h-5 text-primary transition-transform duration-300"
+                style={{ transform: `rotate(${rotation}deg)` }}
+              />
+            </div>
+
+            {/* Current View Label */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full">
+              <span className="text-sm font-medium">
+                {language === "ar" ? views[activeIndex].labelAr : views[activeIndex].label}
+                <span className="text-muted-foreground ml-2">({views[activeIndex].angle}°)</span>
+              </span>
+            </div>
+
+            {/* Drag Progress Bar */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-secondary/50">
+              <div 
+                className="h-full bg-primary transition-all duration-300"
+                style={{ width: `${((activeIndex + 1) / galleryImages.length) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          {/* 360° Progress Indicator */}
+          <div className="flex justify-center mt-4">
+            <div className="relative w-20 h-20">
+              {/* Circle background */}
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="none"
+                  stroke="hsl(var(--secondary))"
+                  strokeWidth="8"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="none"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth="8"
+                  strokeDasharray={`${(activeIndex + 1) * 62.83} 251.32`}
+                  className="transition-all duration-300"
+                />
+              </svg>
+              {/* Center text */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-sm font-medium">{views[activeIndex].angle}°</span>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Thumbnail Navigation */}
         <div className="flex gap-3 justify-center">
-          {views.map((view) => (
+          {views.map((view, index) => (
             <button
               key={view.key}
-              onClick={() => setActiveView(view.key)}
+              onClick={() => goToView(index)}
               className={`relative overflow-hidden rounded-lg transition-all duration-300 ${
-                activeView === view.key 
+                activeIndex === index 
                   ? "ring-2 ring-primary scale-105" 
                   : "opacity-60 hover:opacity-100"
               }`}
             >
               <img
-                src={vehicle.gallery[view.key]}
+                src={galleryImages[index]}
                 alt={`${vehicle.name} - ${view.label}`}
                 className="w-20 h-14 object-cover"
+                draggable={false}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
-              <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-xs font-medium">
+              <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-xs font-medium whitespace-nowrap">
                 {language === "ar" ? view.labelAr : view.label}
               </span>
             </button>
