@@ -171,4 +171,96 @@
   ::-webkit-scrollbar-thumb:hover {
     background: var(--primary-glow);
   }
+
+  /* Parallax Container */
+  .parallax-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    perspective: 1px;
+    perspective-origin: center top;
+    height: 100vh;
+    scroll-behavior: smooth;
+  }
+
+  /* Parallax Sections */
+  .parallax-section {
+    position: relative;
+    transform-style: preserve-3d;
+  }
+
+  .parallax-bg {
+    position: absolute;
+    inset: -20%;
+    transform: translateZ(-1px) scale(2.2);
+    z-index: -1;
+  }
+
+  .parallax-content {
+    position: relative;
+    transform: translateZ(0);
+    z-index: 1;
+  }
+
+  /* Horizontal scroll section */
+  .horizontal-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .horizontal-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .horizontal-scroll-item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  /* Floating animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Slide in animations */
+  @keyframes slide-in-left {
+    from { transform: translateX(-100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes slide-in-right {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes slide-in-up {
+    from { transform: translateY(60px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .animate-slide-left {
+    animation: slide-in-left 0.8s ease-out forwards;
+  }
+
+  .animate-slide-right {
+    animation: slide-in-right 0.8s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slide-in-up 0.8s ease-out forwards;
+  }
+
+  /* Stagger delays */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Star } from "lucide-react";
+import { useIntersectionObserver } from "@/hooks/useParallax";
 // Using front gallery images for cards to maintain consistency
 import bmwImage from "@/assets/bmw-7-front.jpg";
 import mercedesImage from "@/assets/mercedes-s-front.jpg";
@@ -44,6 +45,9 @@ interface Vehicle {
 const Fleet = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { ref: headerRef, isVisible: headerVisible } = useIntersectionObserver(0.1);
+  const { ref: gridRef, isVisible: gridVisible } = useIntersectionObserver(0.1);
+  const { ref: statsRef, isVisible: statsVisible } = useIntersectionObserver(0.1);
 
   const vehicles: Vehicle[] = [
     {
@@ -99,10 +103,16 @@ const Fleet = () => {
   };
 
   return (
-    <section id="fleet" className="py-20 px-6 bg-gradient-card">
-      <div className="container mx-auto">
+    <section id="fleet" className="py-20 px-6 bg-gradient-card relative overflow-hidden">
+      {/* Decorative background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none" />
+      
+      <div className="container mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div 
+          ref={headerRef}
+          className={`text-center mb-16 opacity-0 ${headerVisible ? 'animate-slide-up' : ''}`}
+        >
           <h2 className="text-4xl md:text-5xl font-light mb-6">
             Luxury <span className="gradient-text">Fleet</span>
           </h2>
@@ -111,10 +121,17 @@ const Fleet = () => {
           </p>
         </div>
 
-        {/* Fleet Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Fleet Grid - Horizontal Scroll on Mobile */}
+        <div 
+          ref={gridRef}
+          className="flex lg:grid lg:grid-cols-3 gap-8 overflow-x-auto pb-4 snap-x snap-mandatory lg:overflow-visible lg:pb-0"
+        >
           {vehicles.map((vehicle, index) => (
-            <Card key={index} className="glass luxury-hover overflow-hidden">
+            <Card 
+              key={index} 
+              className={`glass luxury-hover overflow-hidden min-w-[320px] lg:min-w-0 snap-start opacity-0 ${gridVisible ? 'animate-slide-up' : ''}`}
+              style={{ animationDelay: gridVisible ? `${index * 150}ms` : '0ms' }}
+            >
               {/* Vehicle Image */}
               <div className="relative h-48 overflow-hidden">
                 <img 
@@ -177,14 +194,21 @@ const Fleet = () => {
         </div>
 
         {/* Fleet Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-16">
+        <div 
+          ref={statsRef}
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-16"
+        >
           {[
             { number: "15+", label: "Premium Vehicles" },
             { number: "500+", label: "Happy Clients" }, 
             { number: "24/7", label: "Available Service" },
             { number: "5★", label: "Average Rating" }
           ].map((stat, index) => (
-            <div key={index} className="text-center">
+            <div 
+              key={index} 
+              className={`text-center opacity-0 ${statsVisible ? 'animate-slide-up' : ''}`}
+              style={{ animationDelay: statsVisible ? `${index * 100}ms` : '0ms' }}
+            >
               <div className="text-3xl md:text-4xl font-light gradient-text mb-2">
                 {stat.number}
               </div>

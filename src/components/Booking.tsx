@@ -5,15 +5,25 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Clock, MapPin, Phone, Mail, Crown } from "lucide-react";
+import { useIntersectionObserver } from "@/hooks/useParallax";
 
 const Booking = () => {
+  const { ref: leftRef, isVisible: leftVisible } = useIntersectionObserver(0.1);
+  const { ref: rightRef, isVisible: rightVisible } = useIntersectionObserver(0.1);
+
   return (
-    <section id="contact" className="py-20 px-6">
-      <div className="container mx-auto">
+    <section id="contact" className="py-20 px-6 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" />
+      
+      <div className="container mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           
           {/* Contact Information */}
-          <div>
+          <div 
+            ref={leftRef}
+            className={`opacity-0 ${leftVisible ? 'animate-slide-left' : ''}`}
+          >
             <div className="mb-8">
               <h2 className="text-4xl md:text-5xl font-light mb-6">
                 Book Your <span className="gradient-text">Premium</span> Ride
@@ -90,7 +100,10 @@ const Booking = () => {
           </div>
 
           {/* Booking Form */}
-          <Card className="glass">
+          <Card 
+            ref={rightRef}
+            className={`glass opacity-0 ${rightVisible ? 'animate-slide-right' : ''}`}
+          >
             <CardHeader>
               <CardTitle className="text-2xl flex items-center gap-3">
                 <Crown className="w-6 h-6 text-primary" />
